@@ -1,0 +1,192 @@
+---
+title:  "Review and Getting Involved"
+subtitle: ""
+author: "Tim Miller<br>NOAA Fisheries, NEFSC"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: ["xaringan-themer_16_9.css", "slides-style_TMB201.css"]
+    lib_dir: libs
+    nature:
+      ratio: '16:9'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+layout: true
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+<style type="text/css">
+
+code.cpp{
+  font-size: 14px;
+}
+code.r{
+  font-size: 14px;
+}
+
+
+</style>
+
+```{css, echo=FALSE}
+pre {
+  max-height: 250px; /*changes height of chunk output box*/
+  max-width: 800px; /*changes width of chunk output box*/
+  overflow-y: auto; /* auto will add vertical scroll bar when necessary */
+}
+
+```
+```{r set-options, include = FALSE}
+options(width = 50)
+```
+
+```{r xaringan-tile-view, echo=FALSE}
+# this gives you a tile navigation if you type "O" at any time
+#xaringanExtra::use_tile_view()
+```
+
+---
+
+# Outline <br>
+
+* Review what we have covered this week
+* What we did not cover 
+* How everyone can contribute!
+
+---
+
+# Getting data into WHAM
+
+* Learned how to create input without ASAP files
+    * This went surprisingly well
+* Can adjust existing inputs using `set_*` functions
+
+# Configuring selectivity
+
+* Mean selectivity models
+* Random effects are on the mean model parameters (not necessarily on ages)
+* Can be used to model FAA varying over time like SAM
+    * Some issues with calculating BRPs though
+
+---
+
+# Configuring recruitment and abundance at age
+
+* Lots of options for initial numbers at age now
+   * Probably doesn't matter much for recent population estimates
+* Configuring NAA random effects pretty much the same as before
+    * A lot of interest in alternative correlation structures for RE
+
+
+# Configuring natural mortality
+
+* Options for estimating constant natural mortality
+  * by age
+  * same annual REs across ages
+  * For some ages and not others
+  * On cohort survival as well
+  
+# Configuring catchability
+
+* time-varying catchability might be helpful for
+    * indices that cover a small portion of the stock area
+    * species that are not observed well by the survey
+
+---
+
+# Debugging WHAM
+
+* Use nll reporting to deduce where NA issues are.
+* Think hard about input CVs and age comp sample sizes
+    * input samle sizes are particularly important for Dirichlet-Multinomial
+* If optimizer finishes but convergence is lacking probably
+    * initial numbers at age 
+    * selectivity pars
+    * variance pars
+* If optimizer can't even get off the line
+    * adjust mean recruitment pars, log NAA, or initial F to allow observed catch to be taken
+
+# Environmental effects
+
+* If observation error estimates available use them
+    * estimating observation SD can provide rosy picture of effects of covariates
+* Consider comparing models with and without covariates that both have residual variability
+    * Happens automatically with recruitment, but not as obvious for other things
+
+---
+
+# Reference points and projections
+
+* Lots of options for configuring projections for 
+    * F, Catch, M, Covariates, WAA, maturity, ...
+
+# Simulation
+
+* Endless possibilities
+    * Self tests
+    * Cross tests
+    * Simulating an imaginary fish stock
+    * Closed-loop simulation
+
+# What we did not cover
+
+* Covariate effects on movement
+* Reference points and projections with multiple fleets, stocks, regions
+
+---
+
+# Contributing to help improve WHAM
+
+* Needs 
+    * git installed
+    * a github account
+* You can use git and github through Rstudio, Github Desktop, or many other coding environments
+* You can help without knowing C++ and TMB!
+* Developing on the R side can help with
+    * Summarizing input and output from models
+    * Summarizing model configuration specified by the user
+    * Generating output to facilitate reporting for management
+
+---
+
+# Steps to contributing
+
+* First clone the repo as a `wham` directory 
+    * Using the command line from an appropriate parent directory:
+        * `git clone https://github.com/timjmiller/wham.git`
+    * Now you have the WHAM repo!
+* Switch to devel branch (or other branch to work from)
+    * `git checkout devel`
+* Create a branch off of devel appropriately named (e.g., "new_branch_name") for what you want to add
+    * `git branch new_banch_name`
+* Then switch to your new branch
+    *  `git checkout new_branch_name`
+* Make all amazing changes to WHAM
+    * E.g., write a new R function that makes a table with columns: Year, SSB, R, F and corresponding SD, and CIs  
+
+
+---
+
+# Steps to contributing
+
+
+* Make some simple tests of these changes for future development
+    * see `tests` directory of repo for inspiration
+* Make sure your branch is up to date with parent branch
+    * `git fetch`
+    * `git merge devel` (resolve any merge conflicts)
+* Submit pull request when
+    * `devtools::test()` completes successfully 
+    * `devtools::document()` completes successfully
+* Workflow: 
+    * If you intend only to add a useful R function, just need to compile the model once.
+        * From an R session in the wham directory run `pkgbuild::compile_dll(debug = FALSE)`
+        * Then `pkgload::load_all()` will load the WHAM package from your local copy of the repo
+        * During development of R function(s) can repeatedly call `pkgload::load_all()` to update your package with changes to the R function(s).
+        * See Roxygen code in other WHAM functions to see how to write help files for the new function(s).
+    * Developing TMB features is an advanced level of contribution, 
+        * Need to successfully compile the model with the changes.
+        * Overcoming C++ bugs causing failed compilation is...satisfying. 
