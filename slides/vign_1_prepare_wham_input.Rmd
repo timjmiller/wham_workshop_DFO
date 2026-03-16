@@ -68,136 +68,203 @@ options(width = 50)
 # Outline <br>
 
 Creating an input for fitting a model with WHAM:
-* Using ASAP input
-* Without ASAP input
+* From data files
 * Modifying an existing WHAM input
-* Simple multiple-stock and regions
+* Using ASAP input
 ---
 
-# Using ASAP Input <br>
+# Bulding an ASAP Input
 
-For illustration, we will use one of the ASAP3 dat files that comes with the WHAM package. 
-
-First, load the WHAM package. 
-This will find and load the wham package that is first in the search list of locations that R checks.
-```{r, eval = TRUE}
-library(wham)
-```
-
-When there are multiple versions of WHAM installed a particular version can be loaded. 
-
-For example, this will load a version of wham that is installed to the directory `c:/work/wham/old_packages/76093e0`
-```{r, eval = FALSE}
-library("wham", lib.loc = "c:/work/wham/old_packages/76093e0")
-```
+* First, we need to read in all of the necessary data inputs for WHAM. 
+* These inputs were created from the ASAP input `ex2_SENMAYT.dat` file.
+* We will see that the results are the same whether we use the ASAP dat file directly or cobble the input together by hand.
 
 ---
 
-# Using ASAP Input <br>
-
-Second, locate an ASAP3 dat file available in  the WHAM package and load the information from ASAP3 dat files into R using the `read_asap3_dat` function.
-
-```{r, eval = TRUE}
-path_to_examples <- system.file("extdata", package="wham")
-asap3 <- read_asap3_dat(file.path(path_to_examples,"ex2_SNEMAYT.dat"))
-```
----
-
-# Using ASAP Input <br>
-
-Third, create a basic WHAM input using the `prepare_wham_input` function. 
-```{r, eval = TRUE, collapse = TRUE}
-input <- prepare_wham_input(asap3) 
-```
-
----
-
-# Using ASAP Input <br>
-
-Third, create a basic WHAM input using the `prepare_wham_input` function. 
-```{r, eval = FALSE}
-input <- prepare_wham_input(asap3) 
-```
-The input description can be printed at any time by
-```{r, eval = FALSE}
-cat(unlist(input$log))
-```
-
-With no other arguments specified to the function:
-* a basic statistical catch-at-age model will be configured. 
- * No random effects
- * Annual recruitment treated as fixed effects.
- * Stock-recruit function is not allowed.
-* It will be specified to match the ASAP3 configuration as closely as possible.
- * Same data, CV, effective sample size assumptions.
- * Typically same assumptions for initial parameter values.
- * BUT any ASAP3 penalties and phases are ignored.
-
----
-
-
-# Without ASAP Input
-
-First, we need to define all of the necessary data inputs for WHAM. We will use the same information as that in the `ex2_SENMAYT.dat` file and show that the results are the same whether we use the asap object directly or cobble the input together by hand.
+# Bulding an ASAP Input
 
 First the biological information:
 
+```{r, include = FALSE}
+library(here)
+```
+```{r, eval = FALSE}
+library(here)
+```
 ```{r, eval = TRUE}
-years <- as.integer(input$years)
-ages <- 1:input$data$n_ages
-waa <- input$data$waa
-mat <- input$data$mature
-Maa <- exp(matrix(c(input$par$Mpars), length(years), length(ages), byrow = TRUE) + c(input$par$M_re[1,1,,]))
-waa_pointer_indices <- input$data$waa_pointer_indices
-waa_pointer_fleets <- input$data$waa_pointer_fleets
-waa_pointer_ssb <- input$data$waa_pointer_ssb
-fracyr_ssb <-  input$data$fracyr_SSB
+n_regions <- 1L
+n_stocks <- 1L
+
+#just one maturity at age matrix (1 stock)
+temp <- lapply(1:n_stocks, \(i) as.matrix(read.csv(here("data", paste0("mat_",i,".csv")))))
+mat <- array(0, dim = c(n_stocks,dim(temp[[1]])))
+for(i in 1:n_stocks) mat[i,,] <- temp[[i]]
+
+dim(mat) #(n_stocks x n_years x n_ages)
+n_years <- dim(mat)[2]
+n_ages <- dim(mat)[3]
+
+years = 1973:2011 
+
+ages <- 1:n_ages
+```
+
+---
+
+# Bulding an ASAP Input
+
+More biological information:
+
+```{r, eval = TRUE}
+#there are 7 WAA matrices
+temp <- lapply(1:7, \(i) as.matrix(read.csv(here("data", paste0("waa_",i,".csv")))))
+waa <- array(0, dim = c(7,dim(temp[[1]])))
+for(i in 1:(dim(waa)[1])) waa[i,,] <- temp[[i]]
+
+waa_pointer_ssb <- 7
+
+#1 column for 1 stock
+fracyr_ssb <- as.matrix(read.csv(here("data", "fracyr_ssb.csv")))
+
+#Make MAA array (n_stocks x n_regions x n_years x n_ages)
+MAA <- array(NA, dim = c(n_stocks, n_regions, n_years, n_ages))
+for(i in 1:n_stocks) for(j in 1:n_regions) MAA[i,j,,] <- as.matrix(read.csv(file = here("data", paste0("MAA_stock_", i, "_region_",j,".csv"))))
 ```
 ---
 
-# Without ASAP Input
+# Bulding an ASAP Input
 
 Next the catch information:
 ```{r, eval = TRUE}
-catch <- input$data$agg_catch
-catch_cv <- cbind(sqrt(exp(input$data$agg_catch_sigma^2) - 1))
-catch_Neff <- cbind(input$data$catch_Neff)
-catch_paa <- input$data$catch_paa
-use_catch_paa <- input$data$use_catch_paa
-selblock_pointer_fleets <- input$data$selblock_pointer_fleets
+catch <- as.matrix(read.csv(here("data", "catch.csv")))
+any(!catch>0) #cannot be any years without catch
+
+#should be n_years x n_fleets
+dim(catch) 
+
+#just one column: 1 fleet
+n_fleets <- NCOL(catch)
+
+catch_cv <- as.matrix(read.csv(here("data", "catch_cv.csv")))
+any(!catch_cv>0) #cannot be any years with cv missing
+
+#should be n_years x n_fleets
+dim(catch_cv)
 ```
+
+---
+
+# Bulding an ASAP Input
+
+More catch infomation:
+```{r, eval = TRUE}
+#proportions at age matrix for each fleet is n_years x n_ages
+catch_paa <- as.matrix(read.csv(here("data", "catch_paa_fleet_1.csv")))
+dim(catch_paa) 
+
+#array used by WHAM: (n_fleets x n_years x n_ages)
+catch_paa <- array(catch_paa, dim = c(1,dim(catch_paa)))
+catch_paa[which(catch_paa<0)] <- NA
+
+catch_Neff <- as.matrix(read.csv(here("data", "catch_Neff.csv")))
+
+#should be n_years x n_fleets
+dim(catch_Neff)
+
+#0/1 matrx (n_years x n_fleets) whether to use proportions at age each year)
+use_catch_paa <- matrix(0L, n_years, n_fleets)
+for(f in 1:n_fleets) for(y in 1:n_years) use_catch_paa[y,f] <- sum(!any(is.na(catch_paa[f,y,])))
+
+#Neff must be greater than 0)
+use_catch_paa[which(!catch_Neff>0)] <- 0
+
+#same selectivity model for the fleet for all years
+selblock_pointer_fleets <- matrix(1, n_years, n_fleets)
+
+#first WAA matrix
+waa_pointer_fleets <- 1
+```
+
+---
+
+# Bulding an ASAP Input
 
 Finally, the information for all indices:
 ```{r, eval = TRUE}
-index <- input$data$agg_indices
-index_cv <- cbind(sqrt(exp(input$data$agg_index_sigma^2) - 1))
-index_Neff <- cbind(input$data$index_Neff)
-index_fracyr <- input$data$fracyr_indices
-units_indices <- input$data$units_indices
-units_index_paa <- input$data$units_index_paa
-use_indices <- input$data$use_indices
-use_index_paa <- input$data$use_index_paa
-index_paa <- input$data$index_paa
-selblock_pointer_indices <- input$data$selblock_pointer_indices
+indices <- as.matrix(read.csv(here("data", "indices.csv")))
+index_cv <- as.matrix(read.csv(here("data", "index_cv.csv")))
+#indices must be greater than 0
+indices[which(!indices>0)] <- NA
+indices[which(!index_cv>0)] <- NA
+
+#should be n_years x n_indices
+dim(indices)
+
+#5 indices
+n_indices <- NCOL(indices)
+
+#How is the index measured? 2 = numbers, 1 = biomass
+units_indices <- c(2,2,2,1,1)
+#How are the proportions at age measured? 2 = numbers, 1 = biomass
+units_index_paa <- c(2,2,2,1,1)
+
+index_Neff <- as.matrix(read.csv(here("data", "index_Neff.csv")))
+
+#should be n_years x n_indices
+dim(index_Neff)
+```
+
+---
+
+# Bulding an ASAP Input
+
+More index information:
+
+```{r, eval = TRUE}
+
+#different selectivity model for each index
+selblock_pointer_indices <- t(matrix(1+1:n_indices, n_indices, n_years))
+
+#proportions at age matrix for each index is n_years x n_ages
+temp <- lapply(1:n_indices, \(i) as.matrix(read.csv(here("data", paste0("index_paa_",i,".csv")))))
+
+#array used by WHAM: (n_indices x n_years x n_ages)
+index_paa <- array(0, dim = c(n_indices,dim(temp[[1]])))
+for(i in 1:n_indices) index_paa[i,,] <- temp[[i]]
+
+#0/1 matrix (n_years x n_fleets) whether to use indices and proportions at age each year)
+use_index_paa <- use_indices <- matrix(0L, n_years, n_indices)
+
+use_indices[] <- as.integer(!is.na(indices))
+for(i in 1:n_indices) for(y in 1:n_years) use_index_paa[y,i] <- sum(!any(is.na(index_paa[i,y,])))
+#Neff must be greater than 0)
+use_index_paa[which(!index_Neff>0)] <- 0
+
+
+index_fracyr <- as.matrix(read.csv(here("data", "index_fracyr.csv")))
+
+#should be n_years x n_indices
+dim(index_fracyr)
+
+waa_pointer_indices <- 1  + 1:n_indices
 ```
 
 ---
 
 
-# Without ASAP Input
+# Bulding an ASAP Input
 
 Now we are ready to build the necessary arguments required by `prepare_wham_input`. 
 
 First is the `basic_info` argument which includes biological information. Note, we now provide information on the number of stocks, regions, and intervals, but default values are the same.
 ```{r, eval = TRUE}
 basic_info <- list(
-  n_stocks = 1L,
+  n_stocks = n_stocks,
   ages = ages,
-  n_seasons = 1L,
-  n_fleets = 1L,
+  n_fleets = n_fleets,
   fracyr_SSB = fracyr_ssb,
   maturity = mat,
-  years = years,
+  years = years, 
   waa = waa,
   waa_pointer_ssb = waa_pointer_ssb
 )
@@ -206,12 +273,12 @@ basic_info <- list(
 
 ---
 
-# Without ASAP Input
+# Bulding an ASAP Input
 
 Second, the catch information:
 ```{r, eval = TRUE}
 catch_info <- list(
-  n_fleets = NCOL(catch),
+  n_fleets = n_fleets,
   agg_catch = catch,
   agg_catch_cv = catch_cv,
   catch_paa = catch_paa,
@@ -224,13 +291,13 @@ catch_info <- list(
 ```
 ---
 
-# Without ASAP Input
+# Bulding an ASAP Input
 
 Next, the information for the indices:
 ```{r, eval = TRUE}
 index_info <- list(
-  n_indices = NCOL(index),
-  agg_indices = index,
+  n_indices = n_indices,
+  agg_indices = indices,
   units_indices = units_indices,
   units_index_paa = units_index_paa,
   agg_index_cv = index_cv,
@@ -245,15 +312,13 @@ index_info <- list(
 ```
 ---
 
-# Without ASAP Input
+# Bulding an ASAP Input
 
 The last two arguments to prepare_wham_input that we need are for natural mortality and selectivity. Natural mortality is separated from basic biology because there are many different ways to model natural mortality in WHAM.
 
 Natural mortality is not estimated. Assumed M changes with age for this stock, but is constant over time.
 ```{r, eval = TRUE}
-M_in <- list(
-  initial_MAA = array(Maa, dim = c(1,1,length(basic_info$years), length(basic_info$ages)))
-)
+M_in <- list(initial_MAA = MAA)
 ```
 
 Specify using logistic selectivity for all 6 selectivity blocks and initial values for $a_{50}$ and inverse of slope. Fixing selectivity for the last two selectivity blocks.
@@ -267,14 +332,20 @@ selectivity <- list(
 
 ---
 
-# Creating WHAM inputs: 3 ways
+# Creating the WHAM input
 
-All at once
+First, load the WHAM package. 
+This will find and load the wham package that is first in the search list of locations that R checks.
+```{r, eval = TRUE}
+library(wham)
+```
+
+We can build all at once using the arguments in `prepare_wham_input`:
 ```{r, eval = FALSE}
 input_all <- prepare_wham_input(basic_info = basic_info, selectivity = selectivity, catch_info = catch_info, index_info = index_info, M = M_in)
 ```
 
-Build input sequentially
+Build input sequentially using `set_*` functions:
 ```{r, eval = FALSE}
 input_seq <- prepare_wham_input(basic_info = basic_info)
 input_seq <- set_M(input_seq, M = M_in)
@@ -283,10 +354,6 @@ input_seq <- set_F(input_seq)
 input_seq <- set_indices(input_seq, index_info = index_info)
 input_seq <- set_q(input_seq)
 input_seq <- set_selectivity(input_seq, selectivity = selectivity)
-```
-Using asap input
-```{r, eval = FALSE}
-input_asap <- prepare_wham_input(asap3) 
 ```
 ```{r, include = FALSE}
 input_all <- prepare_wham_input(basic_info = basic_info, selectivity = selectivity, catch_info = catch_info, index_info = index_info, M = M_in)
@@ -297,8 +364,39 @@ input_seq <- set_F(input_seq)
 input_seq <- set_indices(input_seq, index_info = index_info)
 input_seq <- set_q(input_seq)
 input_seq <- set_selectivity(input_seq, selectivity = selectivity)
+```
+
+---
+# Using ASAP Input <br>
+
+A mentioned , we used data from an existing ASAP dat file that is provided in the WHAM package.
+
+```{r, eval = FALSE}
+path_to_examples <- system.file("extdata", package="wham")
+asap3 <- read_asap3_dat(file.path(path_to_examples,"ex2_SNEMAYT.dat"))
 input_asap <- prepare_wham_input(asap3) 
 ```
+```{r, include = FALSE}
+path_to_examples <- system.file("extdata", package="wham")
+asap3 <- read_asap3_dat(file.path(path_to_examples,"ex2_SNEMAYT.dat"))
+input_asap <- prepare_wham_input(asap3) 
+```
+
+---
+
+# Basic WHAM model
+
+With no other arguments specified to the function:
+* a basic statistical catch-at-age model will be configured. 
+ * No random effects
+ * Annual recruitment treated as fixed effects.
+ * Stock-recruit function is not allowed.
+* When using ASAP dat files, WHAM defaults match the ASAP3 configuration as closely as possible.
+ * Same data, CV, effective sample size assumptions.
+ * Typically same assumptions for initial parameter values.
+ * BUT any ASAP3 penalties and phases are ignored.
+
+
 ---
 
 # Inside the WHAM input
@@ -339,7 +437,7 @@ nofit_all$fn() - nofit_asap$fn() #different
 
 # Compare unfit models
 
-The asap file includes different initial values for initial abuandance at age and catchability:
+The asap file includes different initial values for initial abundance at age and catchability:
 ```{r, eval = TRUE}
 nofit_asap$par-nofit_all$par
 ```
