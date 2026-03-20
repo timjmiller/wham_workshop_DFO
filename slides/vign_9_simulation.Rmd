@@ -34,10 +34,15 @@ code.r{
 ```{css, echo=FALSE}
 pre {
   max-height: 250px; /*changes height of chunk output box*/
-  max-width: 800px; /*changes width of chunk output box*/
+  max-width: 1200px; /*changes width of chunk output box*/
+  overflow-x: auto; /* auto will add vertical scroll bar when necessary */
   overflow-y: auto; /* auto will add vertical scroll bar when necessary */
 }
-
+.main-container {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
 ```
 ```{r set-options, include = FALSE}
 options(width = 50)
@@ -57,7 +62,7 @@ options(width = 50)
 * Fit models to data simulated from a different model.
 * Configure different assumptions about the population for both the operating model and the estimating model.
 * Do a closed-loop simulation with operating model, fitting an estimating model, generating catch advice and incorporating it into the operating model.
-* **See the simulation vignette for this wham version for greater details**
+* **See the simulation vignette for wham for more details**
 ---
 
 # Getting started
@@ -172,7 +177,14 @@ sim_fn = function(om, input, do.fit = FALSE){
 * The om assumes (implicitly) that the age composition observations have a multinomial distribution
 * Here is an input that instead assumes a logistic normal (treating 0s as missing).
 
-```{r, eval=TRUE, results = "hide"}
+```{r, include = FALSE}
+input_em <- prepare_wham_input(
+  asap3, 
+  selectivity=selectivity,
+  NAA_re = NAA_re,
+  age_comp = "logistic-normal-miss0") #the only difference from original input
+```
+```{r, eval=FALSE}
 input_em <- prepare_wham_input(
   asap3, 
   selectivity=selectivity,
@@ -185,14 +197,16 @@ input_em <- prepare_wham_input(
 
 Using `do.fit = FALSE`, we can see the difference between the age composition observations that are fitted and those that were simulated. 
 
+
 The 4-9 elements correspond to the index age composition observations in the first year:
+.small-code[
 ```{r, eval = TRUE}
 set.seed(123)
 sim = sim_fn(fit_1, input_em, do.fit = FALSE)
 sim[[1]]$data$obs[1:10,] #data.frame of observations and identifying information
 sim[[1]]$data$obsvec[4:9] #showing obsvec that is used (MVN = logistic normal)
 ```
-
+]
 ---
 
 # An em with an alternative age composition likelihood
@@ -368,7 +382,7 @@ NAA_re_om <- list(
 
 * Create the operating model input
 
-```{r, eval=TRUE, results = "hide"}
+```{r, eval=FALSE}
 stock_om_input <- prepare_wham_input(
   basic_info = basic_info, 
   selectivity = selectivity_om, 
@@ -378,11 +392,18 @@ stock_om_input <- prepare_wham_input(
   M = M_om,
   F = F_info
 )
-```
-```{r, eval = FALSE}
 stock_om = fit_wham(stock_om_input, do.fit = FALSE, MakeADFun.silent = TRUE)
 ```
 ```{r, include = FALSE}
+stock_om_input <- prepare_wham_input(
+  basic_info = basic_info, 
+  selectivity = selectivity_om, 
+  NAA_re = NAA_re_om, 
+  catch_info = catch_info,
+  index_info = index_info,
+  M = M_om,
+  F = F_info
+)
 stock_om = readRDS(file.path("../temp", "vign_10_stock_om_1.RDS"))
 ```
 ---

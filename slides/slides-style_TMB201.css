@@ -313,3 +313,11 @@ div.my-footer a {
   flex-direction: column;
   flex-wrap: wrap;
 }
+
+.small-code .remark-code {
+  font-size: 50% !important;
+  padding: 0px 0px 0px 0px;
+  width: 100% !important; /* Adjust width as needed */
+  margin-left: auto;
+  margin-right: auto;
+}

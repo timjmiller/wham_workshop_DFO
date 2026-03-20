@@ -2,3 +2,4 @@ temp
 *.txt
 .Rproj.user
 *.Rproj
+.Rhistory

@@ -152,7 +152,6 @@ input_1$par$logit_selpars[1:4,7:8] <- 0
 ```
 ```{r}
 input_1$data$percentSPR
-input_1$data$avg_years_ind
 input_1$data$XSPR_R_avg_yrs
 tail(1:length(input_1$years),10)-1 #C++ starts at 0
 input_1$data$XSPR_R_opt

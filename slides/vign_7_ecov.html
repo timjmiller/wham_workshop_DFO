@@ -228,7 +228,7 @@ input_0 &lt;- prepare_wham_input(asap3, recruit_model = 3,
 
 fit_0 &lt;- fit_wham(input_0, do.sdrep = FALSE, do.retro = FALSE, do.osa = FALSE)
 fit_0 &lt;- do_sdreport(fit_0)
-fit_0$peels &lt;- retro(fit_0)
+fit_0 &lt;- do_retro_peels(fit_0)
 fit_0 &lt;- make_osa_residuals(fit_0)
 plot_wham_output(fit_0, dir.main = tmp.dir)
 ```
@@ -238,11 +238,11 @@ plot_wham_output(fit_0, dir.main = tmp.dir)
 
 Diagnostics of the GSI index without effects
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_0_GSI_diagnostic.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_0_GSI_diagnostic.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_0_GSI_osa.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_0_GSI_osa.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -257,7 +257,7 @@ Check parameter estimates without GSI effects on recruitment:
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_0_par_table.png&quot; width=&quot;100%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_0_par_table.png&quot; alt=&quot;&quot; width=&quot;100%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -273,7 +273,7 @@ ecov_1$recruitment_how &lt;- matrix(&quot;limiting-lag-1-linear&quot;)
 input_1 &lt;- set_ecov(input_0, ecov_1)
 fit_1 &lt;- fit_wham(input_1, do.sdrep = FALSE, do.retro = FALSE, do.osa = FALSE)
 fit_1 &lt;- do_sdreport(fit_1)
-fit_1$peels &lt;- retro(fit_1)
+fit_1 &lt;- do_retro_peels(fit_1)
 fit_1 &lt;- make_osa_residuals(fit_1)
 plot_wham_output(fit_1, dir.main = tmp.dir)
 ```
@@ -283,11 +283,11 @@ plot_wham_output(fit_1, dir.main = tmp.dir)
 
 Diagnostics of the GSI index with effect on recruitment
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_1_GSI_diagnostic.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_1_GSI_diagnostic.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_1_GSI_osa.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_1_GSI_osa.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -302,14 +302,14 @@ Check parameter estimates with GSI effects on recruitment:
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_1_par_table.png&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_1_par_table.png&quot; alt=&quot;&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
 
 # Fitting effects on recruitment
 
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_1_SR.png&quot; width=&quot;50%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_1_SR.png&quot; alt=&quot;&quot; width=&quot;50%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 
 ---
 
@@ -340,7 +340,7 @@ input_2 &lt;- set_ecov(input_0, ecov_2)
 input_2 &lt;- set_M(input_2, M)
 fit_2 &lt;- fit_wham(input_2, do.sdrep = FALSE, do.retro = FALSE, do.osa = FALSE)
 fit_2 &lt;- do_sdreport(fit_2)
-fit_2$peels &lt;- retro(fit_2)
+fit_2 &lt;- do_retro_peels(fit_2)
 fit_2 &lt;- make_osa_residuals(fit_2)
 plot_wham_output(fit_2, dir.main = tmp.dir)
 ```
@@ -350,11 +350,11 @@ plot_wham_output(fit_2, dir.main = tmp.dir)
 
 Check diagnostics of the GSI index again without effects
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_2_GSI_diagnostic.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_2_GSI_diagnostic.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_2_GSI_osa.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_2_GSI_osa.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -368,7 +368,7 @@ Check parameter estimates without GSI effects on M:
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_2_par_table.png&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_2_par_table.png&quot; alt=&quot;&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -385,7 +385,7 @@ ecov_3$M_how[] &lt;- &quot;lag-0-linear&quot;
 input_3 &lt;- set_ecov(input_2, ecov_3)
 fit_3 &lt;- fit_wham(input_3, do.sdrep = FALSE, do.retro = FALSE, do.osa = FALSE)
 fit_3 &lt;- do_sdreport(fit_3)
-fit_3$peels &lt;- retro(fit_3)
+fit_3 &lt;- do_retro_peels(fit_3)
 fit_3 &lt;- make_osa_residuals(fit_3)
 plot_wham_output(fit_3, dir.main = tmp.dir)
 ```
@@ -395,11 +395,11 @@ plot_wham_output(fit_3, dir.main = tmp.dir)
 
 Check diagnostics of the GSI index again with effects on M
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_3_GSI_diagnostic.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_3_GSI_diagnostic.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_3_GSI_osa.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_3_GSI_osa.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -414,14 +414,14 @@ Check parameter estimates with GSI effects on M:
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_3_par_table.png&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_3_par_table.png&quot; alt=&quot;&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
 
 # Fitting effects on M
 
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_3_M.png&quot; width=&quot;50%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_3_M.png&quot; alt=&quot;&quot; width=&quot;50%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 
 ---
 
@@ -484,7 +484,7 @@ Check parameter estimates with GSI effects on M:
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_4_par_table.png&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_4_par_table.png&quot; alt=&quot;&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -492,11 +492,11 @@ Check parameter estimates with GSI effects on M:
 # Fitting effects on recruitment and M
 
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_4_SR.png&quot; width=&quot;100%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_4_SR.png&quot; alt=&quot;&quot; width=&quot;100%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_4_M.png&quot; width=&quot;100%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_4_M.png&quot; alt=&quot;&quot; width=&quot;100%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -519,7 +519,7 @@ comp_mods &lt;- compare_wham_models(list(fit_0,fit_1,fit_2,fit_3,fit_4), fdir = 
 ```
 ]
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_compare_SSB_F_R.png&quot; width=&quot;70%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_compare_SSB_F_R.png&quot; alt=&quot;&quot; width=&quot;70%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 ---
 
@@ -534,7 +534,7 @@ catchability &lt;- list(
 input_5 &lt;- set_q(input_0, catchability)
 fit_5 &lt;- fit_wham(input_5, do.sdrep = FALSE, do.retro = FALSE, do.osa = FALSE)
 fit_5 &lt;- do_sdreport(fit_5)
-fit_5$peels &lt;- retro(fit_5)
+fit_5 &lt;- do_retro_peels(fit_5)
 fit_5 &lt;- make_osa_residuals(fit_5)
 plot_wham_output(fit_5, dir.main = tmp.dir)
 ```
@@ -545,11 +545,11 @@ plot_wham_output(fit_5, dir.main = tmp.dir)
 
 Check diagnostics of the GSI index again without effects
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_5_GSI_diagnostic.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_5_GSI_diagnostic.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_5_GSI_osa.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_5_GSI_osa.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -564,7 +564,7 @@ With effect of GSI on catchability check:
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_5_par_table.png&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_5_par_table.png&quot; alt=&quot;&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -581,7 +581,7 @@ input_6 &lt;- set_ecov(input_5, ecov_5)
 fit_6 &lt;- fit_wham(input_6, do.sdrep = FALSE, do.retro = FALSE, do.osa = FALSE)
 
 fit_6 &lt;- do_sdreport(fit_6)
-fit_6$peels &lt;- retro(fit_6)
+fit_6 &lt;- do_retro_peels(fit_6)
 fit_6 &lt;- make_osa_residuals(fit_6)
 plot_wham_output(fit_6, dir.main = tmp.dir)
 ```
@@ -591,11 +591,11 @@ plot_wham_output(fit_6, dir.main = tmp.dir)
 
 Check diagnostics of the GSI index again with effects on catchability:
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_6_GSI_diagnostic.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_6_GSI_diagnostic.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_6_GSI_osa.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_6_GSI_osa.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -610,7 +610,7 @@ Check parameter estimates with GSI effects on catchability:
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_6_par_table.png&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_6_par_table.png&quot; alt=&quot;&quot; width=&quot;110%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -619,11 +619,11 @@ Check parameter estimates with GSI effects on catchability:
 
 Compare annual catchability with and without GSI effects
 .pull-left[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_5_q.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_5_q.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_6_q.png&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_fit_6_q.png&quot; alt=&quot;&quot; width=&quot;95%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -643,7 +643,7 @@ comp_mods &lt;- compare_wham_models(list(fit_5,fit_6), fdir = tmp.dir)
 ```
 ]
 .pull-right[
-&lt;img src=&quot;data:image/png;base64,#figs/vign_7_compare_SSB_F_R_2.png&quot; width=&quot;70%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#figs/vign_7_compare_SSB_F_R_2.png&quot; alt=&quot;&quot; width=&quot;70%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
